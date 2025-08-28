@@ -9,7 +9,7 @@ from .models import Profile
 def update_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
-    else:
+    elif hasattr(instance, 'profile'):
         instance.profile.save()
 
 
@@ -24,6 +24,6 @@ def populate_social_profile_data(sender, request, sociallogin, **kwargs):
         return
     
     profile = getattr(sociallogin.user, 'profile', None)
-    if profile:
-        profile.avatar_url = picture_url
+    if profile and not profile.image:
+        profile.social_image_url = picture_url
         profile.save()
