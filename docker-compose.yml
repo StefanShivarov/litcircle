@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "${POSTGES_PORT}:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - litcircle_postgres_data:/var/lib/postgresql/data
 
