@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+  <h2>Explore Books for "{{ circle.name }}"</h2>
+
+  <!-- Search Form -->
+  <form method="get" class="input-group mb-3">
+    <input type="text" name="q" class="form-control" placeholder="Search books..." value="{{ query }}">
+    <button class="btn btn-primary">Search</button>
+  </form>
+
+  <!-- Book Cards -->
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+    {% for book in results %}
+    <div class="col">
+      <div class="card h-100 shadow-sm d-flex flex-column">
+        <img src="{{ book.thumbnail|default:'/static/images/default_book_cover.png' }}"
+             class="card-img-top pt-3" alt="{{ book.title }}" style="height: 200px; object-fit: contain;">
+        <div class="card-body d-flex flex-column">
+          <h6 class="card-title text-truncate" title="{{ book.title }}">{{ book.title }}</h6>
+          <p class="small mb-2 text-muted text-truncate" title="{{ book.authors }}">{{ book.authors }}</p>
+          <div class="mt-auto">
+            <form method="post" action="{% url 'books:vote_for_book' circle.id book.google_books_id %}">
+              {% csrf_token %}
+              <button class="btn btn-outline-primary btn-sm w-100">Vote</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+      <p class="text-muted">No books found.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if total_pages > 1 %}
+  <nav class="mt-4">
+    <ul class="pagination justify-content-center">
+      <!-- Previous Page -->
+      {% if page > 1 %}
+      <li class="page-item">
+        <a class="page-link" href="?q={{ query }}&page={{ page|add:"-1" }}">Previous</a>
+      </li>
+      {% endif %}
+
+      <!-- Current Page -->
+      <li class="page-item active">
+        <a class="page-link" href="?q={{ query }}&page={{ page }}">{{ page }}</a>
+      </li>
+
+      <!-- Next Page -->
+      {% if page < total_pages %}
+      <li class="page-item">
+        <a class="page-link" href="?q={{ query }}&page={{ page|add:"1" }}">Next</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+</div>
+{% endblock %}
