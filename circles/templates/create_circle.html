@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h2>Create a New Circle</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit">Create Circle</button>
+</form>
+
+<a href="{% url 'circles:my_circles' %}">Back to My Circles</a>
+{% endblock %}

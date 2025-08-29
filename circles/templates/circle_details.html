@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ circle.name }}</h2>
+<p>{{ circle.description }}</p>
+<p>Created by: {{ circle.creator.user.username }}</p>
+
+<h3>Members</h3>
+<ul>
+    {% for member in members %}
+        <li>{{ member.profile.user.username }}</li>
+    {% empty %}
+        <li>No members yet.</li>
+    {% endfor %}
+</ul>
+
+{% if user.profile == circle.creator %}
+    <a href="{% url 'circles:manage_circle_members' circle.id %}">Manage Members</a>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCircleModal">
+        Delete Circle
+    </button>
+
+    <div class="modal fade" id="deleteCircleModal" aria-labelledby="deleteCircleModalLabel" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteCircleModalLabel"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              Are you sure you want to delete circle '{{ circle.name }}'?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <form action="{% url 'circles:delete_circle' circle.id %}" method="post" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% else %}
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#leaveCircleModal">
+        Leave Circle
+    </button>
+    <div class="modal fade" id="leaveCircleModal" aria-labelledby="leaveCircleModalLabel" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="leaveCircleModalLabel">stefo</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              Are you sure you want to delete circle '{{ circle.name }}'?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <form action="{% url 'circles:leave_circle' circle.id %}" method="post" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Leave</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endif %}
+
+{% endblock %}

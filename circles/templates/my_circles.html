@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>My Circles</h2>
+
+<a href="{% url 'circles:create_circle' %}">Create New Circle</a>
+
+{% if memberships %}
+<ul>
+    {% for membership in memberships %}
+    <li>
+        <a href="{% url 'circles:circle_details' membership.circle.id %}">
+            {{ membership.circle.name }}
+        </a>
+        {% if membership.is_admin %}
+            (Owner)
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>You are not a member of any circles yet.</p>
+{% endif %}
+{% endblock %}

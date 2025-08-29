@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Manage Members for "{{ circle.name }}"</h1>
+
+    <!-- Pending Requests -->
+    <h2>Pending Requests</h2>
+    {% if pending_requests %}
+        <div class="pending-requests">
+            {% for membership in pending_requests %}
+                <div class="card">
+                    <img src="{{ membership.profile.image_url }}" alt="avatar" width="50" height="50">
+                    <span>{{ membership.profile.user.username }}</span>
+                    <form method="post" action="{% url 'circles:manage_circle_members' circle.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="approve">
+                        <input type="hidden" name="membership_id" value="{{ membership.id }}">
+                        <button type="submit" class="btn btn-success">Approve</button>
+                    </form>
+                    <!-- Reject button -->
+                    <form method="post" action="{% url 'circles:manage_circle_members' circle.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="reject">
+                        <input type="hidden" name="membership_id" value="{{ membership.id }}">
+                        <button type="submit" class="btn btn-danger">Reject</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No pending requests.</p>
+    {% endif %}
+
+    <hr>
+
+    <!-- Current Members -->
+    <h2>Current Members</h2>
+    {% if members %}
+        <div class="members">
+            {% for membership in members %}
+                <div class="card">
+                    <img src="{{ membership.profile.image_url }}" alt="avatar" width="50" height="50">
+                    <span>{{ membership.profile.user.username }}</span>
+                    {% if not membership.is_owner %}
+                        <form method="post" action="{% url 'circles:manage_circle_members' circle.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="remove">
+                            <input type="hidden" name="membership_id" value="{{ membership.id }}">
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                        {% else %}
+                        <span>(Owner)</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No members yet.</p>
+    {% endif %}
+
+    <hr>
+
+    <!-- Search Users -->
+    <h2>Search for Users to Add</h2>
+    <form method="get" class="search-form">
+        <input type="text" name="q" placeholder="Search users..." value="{{ request.GET.q }}">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if search_results %}
+        <div class="search-results">
+            {% for profile in search_results %}
+                <div class="card">
+                    <img src="{{ profile.image_url }}" alt="avatar" width="50" height="50">
+                    <span>{{ profile.user.username }}</span>
+                    <form method="post" action="{% url 'circles:manage_circle_members' circle.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="add">
+                        <input type="hidden" name="profile_id" value="{{ profile.id }}">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </form>
+                    </div>
+            {% endfor %}
+        </div>
+
+    {% elif request.GET.q %}
+        <p>No users found.</p>
+    {% endif %}
+
+    
+{% endblock %}
+

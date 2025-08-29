@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-4">
+    <h2>Discover New Circles</h2>
+
+    <!-- Search form -->
+    <form method="get" class="d-flex mb-4">
+        <input type="text" name="q" class="form-control me-2"
+               placeholder="Search circles by name..."
+               value="{{ query }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <!-- Circle results -->
+    {% if circles %}
+        <div class="row">
+            {% for circle in circles %}
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ circle.name }}</h5>
+                            <p class="card-text">{{ circle.description|default:"No description available." }}</p>
+                        </div>
+                        <div class="card-footer">
+                            {% if circle.id in pending_circle_ids %}
+                                <form method="post" action="{% url 'circles:cancel_request' circle.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-warning w-100">
+                                        Cancel Request
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form method="post" action="{% url 'circles:request_to_join_circle' circle.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success w-100">
+                                        Request to Join
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">No circles found{% if query %} for "{{ query }}"{% endif %}.</p>
+    {% endif %}
+</div>
+{% endblock %}
