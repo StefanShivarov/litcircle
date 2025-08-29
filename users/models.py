@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-
+from django.templatetags.static import static
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -18,4 +18,4 @@ class Profile(models.Model):
             return self.image.url
         if self.social_image_url:
             return self.social_image_url
-        return '/static/images/default_profile.png'
+        return static('images/default_profile_picture.png')
