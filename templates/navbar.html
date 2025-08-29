@@ -1,9 +1,43 @@
-<nav>
-    {% if user.is_authenticated %}
-        <span>Welcome, {{ user.username }}!</span>
-        <a href="{% url 'users:signout' %}">Sign Out</a>
-    {% else %}
-        <a href="{% url 'users:signin' %}">Sign In</a>
-        <a href="{% url 'users:signup' %}">Sign Up</a>
-    {% endif %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'users:home' %}">LitCircle</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'circles:my_circles' %}">My Circles</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'circles:discover_circles' %}">Discover Circles</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'circles:create_circle' %}">Create Circle</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ user.profile.image_url }}" alt="Profile Picture" class="rounded-circle" width="30" height="30">
+                            {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'users:home' %}">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'users:signout' %}">Sign Out</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:signin' %}">Sign In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:signup' %}">Sign Up</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
 </nav>
