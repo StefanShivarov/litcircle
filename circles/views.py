@@ -2,10 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from users.models import Profile
 from .models import Circle, Membership
+from books.models import Vote
 from .forms import CircleForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.urls import reverse
+from books.utils import fetch_google_book
 
 
 @login_required
@@ -77,10 +78,20 @@ def circle_details(request, circle_id):
     is_member = members.filter(profile=request.user.profile).exists()
     if not is_member:
         raise PermissionDenied("You are not a member of this circle.")
+    
+    votes = Vote.objects.filter(circle=circle).select_related('profile')
+    votes_with_books = []
+    for vote in votes:
+        book_data = fetch_google_book(vote.google_books_id)
+        votes_with_books.append({
+            'vote': vote,
+            'book': book_data
+        })
 
     return render(request, 'circle_details.html', {
         'circle': circle,
-        'members': members
+        'members': members,
+        'votes': votes_with_books,
     })
 
 
