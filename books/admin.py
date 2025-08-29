@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import Book, Vote, CircleReadBook
 
-# Register your models here.
+
+admin.register(Book)
+admin.register(Vote)
+admin.register(CircleReadBook)
