@@ -1,9 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Welcome to LitCircle!</h1>
-<p>
-    <a href="{% url 'users:signin' %}">Sign In</a> or
-    <a href="{% url 'users:signup' %}">Sign Up</a>
-</p>
+<div class="landing-page" style="background: url('/static/images/landing_background.png') no-repeat center center/cover; height:calc(100vh - 56px);">
+  <div class="container h-100 d-flex flex-column justify-content-center align-items-center text-center text-white">
+    <h1 class="mb-4 display-4">Welcome to LitCircle!</h1>
+    <p class="lead mb-4">Join or create reading circles, vote on books, and share your reading journey with others.</p>
+    <div>
+      <a href="{% url 'users:signup' %}" class="btn btn-primary btn-lg me-2">Sign Up</a>
+      <a href="{% url 'users:signin' %}" class="btn btn-outline-light btn-lg">Sign In</a>
+    </div>
+  </div>
+</div>
 {% endblock %}
