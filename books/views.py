@@ -98,3 +98,12 @@ def finish_book(request, circle_id):
     return redirect('circles:circle_details', circle_id=circle.id)
 
 
+@login_required
+def get_finished_books(request, circle_id):
+    circle = get_object_or_404(Circle, id=circle_id)
+    read_books = circle.read_books.select_related('book')
+    context = {
+        'circle': circle,
+        'read_books': read_books,
+    }
+    return render(request, 'finished_books.html', context)

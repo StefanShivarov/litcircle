@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+  <h1 class="mb-4">Finished Books for {{ circle.name }}</h1>
+
+  {% if read_books %}
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for read_book in read_books %}
+    <div class="col">
+      <div class="card h-100 shadow-sm">
+        <img src="{{ read_book.book.thumbnail|default:'/static/images/default_book_cover.png' }}" 
+             alt="{{ read_book.book.title }}" 
+             class="card-img-top" style="height: 200px; object-fit: cover;">
+        <div class="card-body">
+          <h5 class="card-title">{{ read_book.book.title }}</h5>
+          <p class="card-text text-muted small">{{ read_book.book.authors }}</p>
+          <p class="card-text">{{ read_book.book.description|truncatewords:20 }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-muted text-center">No books have been finished by this circle yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
