@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from .utils import search_google_books, fetch_google_book
 from circles.models import Circle
-from .models import Book, Vote
+from .models import Book, Vote, CircleReadBook
 
 
 @login_required
@@ -91,7 +91,7 @@ def finish_book(request, circle_id):
         raise PermissionDenied("Only the circle owner can finish the book.")
 
     if circle.selected_book:
-        circle.read_books.add(circle.selected_book)
+        CircleReadBook.objects.get_or_create(circle=circle, book=circle.selected_book)
         circle.selected_book = None
         circle.save()
 

@@ -22,9 +22,9 @@ def search_google_books(query, page=1, page_size=20):
         volume_info = item.get('volumeInfo', {})
         book = {
             'google_books_id': item.get('id'),
-            'title': volume_info.get('title', 'No title'),
-            'authors': ', '.join(volume_info.get('authors', [])),
-            'description': volume_info.get('description', '')[:500],
+            'title': volume_info.get('title', 'No title')[:200],
+            'authors': ', '.join(volume_info.get('authors', []))[:200],
+            'description': volume_info.get('description', '')[:200],
             'thumbnail': volume_info.get('imageLinks', {}).get('thumbnail', ''),
         }
         results.append(book)

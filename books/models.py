@@ -7,7 +7,7 @@ class Book(models.Model):
     title = models.CharField(max_length=300)
     authors = models.CharField(max_length=300, blank=True)
     description = models.TextField(blank=True)
-    thumbnail = models.URLField(blank=True)
+    thumbnail = models.URLField(max_length=500, blank=True)
 
     def __str__(self):
         return self.title
