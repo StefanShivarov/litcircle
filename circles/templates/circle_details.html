@@ -1,102 +1,129 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>{{ circle.name }}</h2>
-<p>{{ circle.description }}</p>
-<p>Created by: {{ circle.creator.user.username }}</p>
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold">{{ circle.name }}</h1>
+    <p class="text-muted">{{ circle.description }}</p>
+    <p class="small text-muted">Created by: <span class="fw-bold">{{ circle.creator.user.username }}</span></p>
+    <a href="{% url 'books:finished_books' circle.id %}" class="btn btn-outline-secondary btn-sm mt-3">
+      Finished Books
+    </a>
+  </div>
 
-<h3>Members</h3>
-<ul>
+<div class="mb-5">
+  <h3 class="mb-3">Members</h3>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
     {% for member in members %}
-        <li>{{ member.profile.user.username }}</li>
+    <div class="col">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body text-center">
+          <img src="{{ member.profile.image_url|default:'https://via.placeholder.com/100x100?text=User' }}" 
+               alt="{{ member.profile.user.username }}" 
+               class="rounded-circle mb-3" 
+               style="width: 100px; height: 100px; object-fit: cover;">
+
+          <h5 class="card-title mb-1">{{ member.profile.user.username }}</h5>
+
+          {% if member.profile == circle.creator %}
+          <span class="badge bg-success">Owner</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
     {% empty %}
-        <li>No members yet.</li>
+    <div class="col text-center text-muted">
+      <p>No members yet.</p>
+    </div>
     {% endfor %}
-</ul>
+  </div>
 
-{% if user.profile == circle.creator %}
-    <a href="{% url 'circles:manage_circle_members' circle.id %}">Manage Members</a>
-    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCircleModal">
-        Delete Circle
+  {% if user.profile == circle.creator %}
+  <div class="mt-4">
+    <a href="{% url 'circles:manage_circle_members' circle.id %}" class="btn btn-outline-primary btn-sm">
+      Manage Members
+    </a>
+    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteCircleModal">
+      Delete Circle
     </button>
-{% else %}
-    <a href="{% url 'circles:leave_circle' circle.id %}" class="btn btn-warning">Leave Circle</a>
-{% endif %}
+  </div>
+  {% else %}
+  <div class="mt-4">
+    <a href="{% url 'circles:leave_circle' circle.id %}" class="btn btn-warning btn-sm">Leave Circle</a>
+  </div>
+  {% endif %}
+</div>
 
-<!-- Selected Book -->
-<div class="card mb-5 shadow-sm mt-4">
-  <div class="card-body d-flex align-items-center">
-    {% if circle.selected_book %}
-      <img src="{{ circle.selected_book.thumbnail|default:'https://via.placeholder.com/100x150?text=No+Image' }}" 
-           alt="{{ circle.selected_book.title }}" 
-           class="me-4 rounded" style="width:100px; height:150px; object-fit:cover;">
-      <div>
-        <h4 class="card-title">{{ circle.selected_book.title }}</h4>
-        <p class="mb-1"><strong>Author(s):</strong> {{ circle.selected_book.authors }}</p>
-        <p class="small text-muted">{{ circle.selected_book.description|truncatewords:25 }}</p>
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body d-flex align-items-center">
+      {% if circle.selected_book %}
+        <img src="{{ circle.selected_book.thumbnail|default:'https://via.placeholder.com/100x150?text=No+Image' }}" 
+             alt="{{ circle.selected_book.title }}" 
+             class="me-4 rounded" style="width:100px; height:150px; object-fit:cover;">
+        <div>
+          <h4 class="card-title">{{ circle.selected_book.title }}</h4>
+          <p class="mb-1"><strong>Author(s):</strong> {{ circle.selected_book.authors }}</p>
+          <p class="small text-muted">{{ circle.selected_book.description|truncatewords:25 }}</p>
 
-        {% if user.profile == circle.creator %}
+          {% if user.profile == circle.creator %}
           <form method="post" action="{% url 'books:finish_book' circle.id %}">
             {% csrf_token %}
             <button class="btn btn-danger btn-sm">Finish Book</button>
           </form>
-        {% endif %}
-      </div>
-    {% else %}
-      <div class="d-flex align-items-center">
-        <img src="/static/images/default_book_cover.png" class="me-4 rounded">
-        <div>
-          <h4>No book selected</h4>
-          <p class="text-muted">Voting is open! Members can vote for the next book.</p>
-          <a href="{% url 'books:search_books_for_voting' circle.id %}" class="btn btn-primary mt-2">Explore Books</a>
+          {% endif %}
         </div>
-      </div>
-    {% endif %}
-  </div>
-</div>
-
-<!-- Voting Section -->
-{% if not circle.selected_book %}
-<div class="mb-5">
-  <h3 class="mb-3">Current Votes</h3>
-  <div class="card mb-4 shadow-sm">
-    <div class="card-body">
-      {% for vote_data in votes %}
-      <div class="d-flex align-items-center mb-3 p-2 border rounded">
-        <!-- User Section -->
-        <div class="d-flex align-items-center me-4">
-          <img src="{{ vote_data.vote.profile.image_url }}" 
-               alt="{{ vote_data.vote.profile.user.username }}" 
-               class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-          <span class="fw-bold">{{ vote_data.vote.profile.user.username }}</span>
-        </div>
-
-        <!-- Voted Book Section -->
-        <div class="d-flex align-items-center flex-grow-1">
-          <img src="{{ vote_data.book.thumbnail|default:'/static/images/default_book_cover.png' }}" 
-               alt="{{ vote_data.book.title }}" 
-               class="me-3 rounded" style="width: 50px; height: 75px; object-fit: cover;">
-          <div style="flex-grow: 1; min-width: 0; min-height: 0;">
-            <span class="fw-bold">{{ vote_data.book.title }}</span>
-            <p class="small text-muted mb-0">{{ vote_data.book.authors }}</p>
+      {% else %}
+        <div class="d-flex align-items-center">
+          <img src="/static/images/default_book_cover.png" class="me-4 rounded" style="width:100px; height:150px; object-fit:cover;">
+          <div>
+            <h4>No book selected</h4>
+            <p class="text-muted">Voting is open! Members can vote for the next book.</p>
+            <a href="{% url 'books:search_books_for_voting' circle.id %}" class="btn btn-primary mt-2">Explore Books</a>
           </div>
         </div>
-
-        <!-- Action Section (if user is the creator) -->
-        {% if user.profile == circle.creator %}
-        <div>
-          <form method="post" action="{% url 'books:select_book' circle.id vote_data.book.google_books_id %}">
-            {% csrf_token %}
-            <button class="btn btn-success btn-sm">Select</button>
-          </form>
-        </div>
-        {% endif %}
-      </div>
-      {% empty %}
-      <p class="text-muted text-center">No votes yet.</p>
-      {% endfor %}
+      {% endif %}
     </div>
   </div>
+
+  {% if not circle.selected_book %}
+  <div class="mb-5">
+    <h3 class="mb-3">Current Votes</h3>
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+        {% for vote_data in votes %}
+        <div class="d-flex align-items-center mb-3 p-2 border rounded">
+          <div class="d-flex align-items-center me-4">
+            <img src="{{ vote_data.vote.profile.image_url }}" 
+                 alt="{{ vote_data.vote.profile.user.username }}" 
+                 class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+            <span class="fw-bold">{{ vote_data.vote.profile.user.username }}</span>
+          </div>
+
+          <div class="d-flex align-items-center flex-grow-1">
+            <img src="{{ vote_data.book.thumbnail|default:'/static/images/default_book_cover.png' }}" 
+                 alt="{{ vote_data.book.title }}" 
+                 class="me-3 rounded" style="width: 50px; height: 75px; object-fit: cover;">
+            <div style="flex-grow: 1; min-width: 0; min-height: 0;">
+              <span class="fw-bold">{{ vote_data.book.title }}</span>
+              <p class="small text-muted mb-0">{{ vote_data.book.authors }}</p>
+            </div>
+          </div>
+
+          {% if user.profile == circle.creator %}
+          <div>
+            <form method="post" action="{% url 'books:select_book' circle.id vote_data.book.google_books_id %}">
+              {% csrf_token %}
+              <button class="btn btn-success btn-sm">Select</button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+        {% empty %}
+        <p class="text-muted text-center">No votes yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </div>
-{% endif %}
 {% endblock %}
