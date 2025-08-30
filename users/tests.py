@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from users.models import Profile
 
 class UsersViewsTest(TestCase):
-    def set_up(self):
+    def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='testpass123')
         self.profile = self.user.profile
 

@@ -37,7 +37,7 @@ def request_to_join_circle(request, circle_id):
         membership.status = 'pending'
         membership.save()
 
-    return redirect('circles:discover_circles', circle_id=circle.id)
+    return redirect('circles:discover_circles')
 
 
 @login_required
@@ -207,4 +207,3 @@ def manage_circle_members(request, circle_id):
         'search_results': search_user_profiles,
     }
     return render(request, 'manage_members.html', context)
-

@@ -11,7 +11,7 @@
 
           <!-- Current image preview -->
           <div class="text-center mb-4">
-            <img src="{{ user.profile.image.url|default:'/static/images/default_avatar.png' }}" 
+            <img src="{{ user.profile.image_url }}" 
                  alt="{{ user.username }}" 
                  class="rounded-circle shadow-sm mb-2"
                  style="width: 100px; height: 100px; object-fit: cover;">
