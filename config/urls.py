@@ -23,4 +23,5 @@ urlpatterns = [
     path('', include('users.urls', namespace='users')),
     path('circles/', include('circles.urls', namespace='circles')),
     path('circles/', include('books.urls', namespace='books')),
+    path('circles/', include('discussions.urls', namespace='discussions')),
 ]

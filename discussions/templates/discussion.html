@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+  <h3>Discussion – {{ circle.name }}</h3>
+
+  <div id="chat-log" class="border rounded p-3 mb-3" 
+       style="height: 400px; overflow-y: auto; background:#f8f9fa;">
+    {% for msg in messages %}
+      <div class="mb-2">
+        <strong>{{ msg.profile.user.username }}</strong>
+        <small class="text-muted">{{ msg.timestamp|time:"H:i" }}</small><br>
+        {{ msg.content }}
+      </div>
+    {% endfor %}
+  </div>
+
+  <form id="chat-form" class="d-flex">
+    <input id="chat-message-input" type="text" class="form-control me-2" placeholder="Type a message...">
+    <button class="btn btn-primary" type="submit">Send</button>
+  </form>
+</div>
+
+<script>
+  const circleId = "{{ circle.id }}";
+  const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+  const chatSocket = new WebSocket(`${ws_scheme}://${window.location.host}/ws/discussions/{{ circle.id }}/`);
+
+  chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const log = document.querySelector('#chat-log');
+    log.innerHTML += `<div class="mb-2">
+        <strong>${data.profile}</strong>
+        <small class="text-muted">${data.timestamp}</small><br>
+        ${data.content}
+      </div>`;
+    log.scrollTop = log.scrollHeight;
+  };
+
+  document.querySelector('#chat-form').onsubmit = function(e) {
+    e.preventDefault();
+    const input = document.querySelector('#chat-message-input');
+    chatSocket.send(JSON.stringify({'message': input.value}));
+    input.value = '';
+  };
+</script>
+{% endblock %}
