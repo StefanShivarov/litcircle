@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from .models import Profile
 
 
 class CustomSignupForm(UserCreationForm):
@@ -11,7 +12,7 @@ class CustomSignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'bio')
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
         
     def signup(self, request, user):
         user.first_name = self.cleaned_data['first_name']
@@ -26,3 +27,33 @@ class CustomSignupForm(UserCreationForm):
         profile.save()
 
         return user
+
+
+class EditProfileForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=30, required=False)
+    last_name = forms.CharField(max_length=30, required=False)
+
+    class Meta:
+        model = Profile
+        fields = ('bio', 'image')
+        widgets = {
+            'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super().__init__(*args, **kwargs)
+        self.fields['first_name'].initial = user.first_name
+        self.fields['last_name'].initial = user.last_name
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        user = profile.user
+        if commit:
+            profile.save()
+            user = profile.user
+            user.first_name = self.cleaned_data['first_name']
+            user.last_name = self.cleaned_data['last_name']
+            user.save()
+        return profile
